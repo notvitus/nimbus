@@ -10,7 +10,7 @@ class MainWindow(QMainWindow):
         super(MainWindow, self).__init__(*args, **kwargs)
         self.browser = QWebEngineView()
         self.browser.setUrl(QUrl("https://www.google.com"))
-        self.browser.urlChanged.connect(self.update_urlbar)
+        self.browser.urlChanged.connect(self.update_url_bar)
         self.browser.loadFinished.connect(self.update_title)
         self.setCentralWidget(self.browser)
 
@@ -42,9 +42,9 @@ class MainWindow(QMainWindow):
 
         navtb.addSeparator()
 
-        self.urlbar = QLineEdit()
-        self.urlbar.returnPressed.connect(self.navigate_to_url)
-        navtb.addWidget(self.urlbar)
+        self.url_bar = QLineEdit()
+        self.url_bar.returnPressed.connect(self.navigate_to_url)
+        navtb.addWidget(self.url_bar)
 
         stop_btn = QAction("Stop", self)
         stop_btn.setStatusTip("Stop loading current page")
@@ -64,14 +64,14 @@ class MainWindow(QMainWindow):
         self.browser.setUrl(QUrl("https://google.com"))
 
     def navigate_to_url(self):
-        q = QUrl(self.urlbar.text())
+        q = QUrl(self.url_bar.text())
         if q.scheme() == "":
             q.setScheme("http")
         self.browser.setUrl(q)
 
-    def update_urlbar(self, q):
-        self.urlbar.setText(q.toString())
-        self.urlbar.setCursorPosition(0)
+    def update_url_bar(self, q):
+        self.url_bar.setText(q.toString())
+        self.url_bar.setCursorPosition(0)
 
 
 app = QApplication(sys.argv)
