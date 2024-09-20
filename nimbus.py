@@ -6,45 +6,49 @@ import sys
 
 
 class MainWindow(QMainWindow):
+    HOME = "https://www.google.com"
+
     def __init__(self, *args, **kwargs):
         super(MainWindow, self).__init__(*args, **kwargs)
         self.browser = QWebEngineView()
-        self.browser.setUrl(QUrl("https://www.google.com"))
+        self.browser.setUrl(QUrl(MainWindow.HOME))
         self.browser.urlChanged.connect(self.update_url_bar)
-        self.browser.loadFinished.connect(self.update_title)
+        self.browser.loadFinished.connect(
+            lambda: self.setWindowTitle(self.browser.page().title() + " - NIMBUS Browser")
+        )
         self.setCentralWidget(self.browser)
 
         self.status = QStatusBar()
         self.setStatusBar(self.status)
 
-        navtb = QToolBar("Navigation")
-        self.addToolBar(navtb)
+        nav = QToolBar("Navigation")
+        self.addToolBar(nav)
 
         back_btn = QAction("Back", self)
         back_btn.setStatusTip("Back to previous page")
         back_btn.triggered.connect(self.browser.back)
-        navtb.addAction(back_btn)
+        nav.addAction(back_btn)
 
         next_btn = QAction("Forward", self)
         next_btn.setStatusTip("Forward to next page")
         next_btn.triggered.connect(self.browser.forward)
-        navtb.addAction(next_btn)
+        nav.addAction(next_btn)
 
         reload_btn = QAction("Reload", self)
         reload_btn.setStatusTip("Reload page")
         reload_btn.triggered.connect(self.browser.reload)
-        navtb.addAction(reload_btn)
+        nav.addAction(reload_btn)
 
         home_btn = QAction("Home", self)
         home_btn.setStatusTip("Go Home")
-        home_btn.triggered.connect(self.navigate_home)
-        navtb.addAction(home_btn)
+        home_btn.triggered.connect(self.go_home)
+        nav.addAction(home_btn)
 
-        navtb.addSeparator()
+        nav.addSeparator()
 
         self.url_bar = QLineEdit()
-        self.url_bar.returnPressed.connect(self.navigate_to_url)
-        navtb.addWidget(self.url_bar)
+        self.url_bar.returnPressed.connect(self.change_url)
+        nav.addWidget(self.url_bar)
 
         stop_btn = QAction("Stop", self)
         stop_btn.setStatusTip("Stop loading current page")
@@ -52,18 +56,14 @@ class MainWindow(QMainWindow):
         stop_btn.triggered.connect(lambda: stop_btn.setDisabled(True))
         self.browser.loadStarted.connect(lambda: stop_btn.setDisabled(False))
         self.browser.loadFinished.connect(lambda: stop_btn.setDisabled(True))
-        navtb.addAction(stop_btn)
+        nav.addAction(stop_btn)
 
         self.show()
 
-    def update_title(self):
-        title = self.browser.page().title()
-        self.setWindowTitle("%s - NIMBUS Browser" % title)
+    def go_home(self):
+        self.browser.setUrl(QUrl(MainWindow.HOME))
 
-    def navigate_home(self):
-        self.browser.setUrl(QUrl("https://google.com"))
-
-    def navigate_to_url(self):
+    def change_url(self):
         q = QUrl(self.url_bar.text())
         if q.scheme() == "":
             q.setScheme("http")
