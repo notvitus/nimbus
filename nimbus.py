@@ -1,4 +1,4 @@
-from PyQt6.QtCore import QUrl
+from PyQt6.QtCore import QUrl, QEvent, Qt, pyqtSignal
 from PyQt6.QtGui import QAction
 from PyQt6.QtWidgets import QMainWindow, QStatusBar, QToolBar, QLineEdit, QApplication
 from PyQt6.QtWebEngineWidgets import QWebEngineView
@@ -6,17 +6,14 @@ import sys
 
 
 class MainWindow(QMainWindow):
-    HOME = "https://www.google.com"
-
     def __init__(self, *args, **kwargs):
         super(MainWindow, self).__init__(*args, **kwargs)
-        self.browser = QWebEngineView()
-        self.browser.setUrl(QUrl(MainWindow.HOME))
-        self.browser.urlChanged.connect(self.update_url_bar)
-        self.browser.loadFinished.connect(
-            lambda: self.setWindowTitle(self.browser.page().title() + " - NIMBUS Browser")
+        self.webview = QWebEngineView()
+        self.webview.urlChanged.connect(self.update_url_bar)
+        self.webview.loadFinished.connect(
+            lambda: self.setWindowTitle(self.webview.page().title() + " - NIMBUS Browser")
         )
-        self.setCentralWidget(self.browser)
+        self.setCentralWidget(self.webview)
 
         self.status = QStatusBar()
         self.setStatusBar(self.status)
@@ -26,17 +23,17 @@ class MainWindow(QMainWindow):
 
         back_btn = QAction("Back", self)
         back_btn.setStatusTip("Back to previous page")
-        back_btn.triggered.connect(self.browser.back)
+        back_btn.triggered.connect(self.webview.back)
         nav.addAction(back_btn)
 
         next_btn = QAction("Forward", self)
         next_btn.setStatusTip("Forward to next page")
-        next_btn.triggered.connect(self.browser.forward)
+        next_btn.triggered.connect(self.webview.forward)
         nav.addAction(next_btn)
 
         reload_btn = QAction("Reload", self)
         reload_btn.setStatusTip("Reload page")
-        reload_btn.triggered.connect(self.browser.reload)
+        reload_btn.triggered.connect(self.webview.reload)
         nav.addAction(reload_btn)
 
         home_btn = QAction("Home", self)
@@ -52,22 +49,23 @@ class MainWindow(QMainWindow):
 
         stop_btn = QAction("Stop", self)
         stop_btn.setStatusTip("Stop loading current page")
-        stop_btn.triggered.connect(self.browser.stop)
+        stop_btn.triggered.connect(self.webview.stop)
         stop_btn.triggered.connect(lambda: stop_btn.setDisabled(True))
-        self.browser.loadStarted.connect(lambda: stop_btn.setDisabled(False))
-        self.browser.loadFinished.connect(lambda: stop_btn.setDisabled(True))
+        self.webview.loadStarted.connect(lambda: stop_btn.setDisabled(False))
+        self.webview.loadFinished.connect(lambda: stop_btn.setDisabled(True))
         nav.addAction(stop_btn)
 
+        self.go_home()
         self.show()
 
     def go_home(self):
-        self.browser.setUrl(QUrl(MainWindow.HOME))
+        self.webview.setUrl(QUrl("https://www.google.com"))
 
     def change_url(self):
         q = QUrl(self.url_bar.text())
         if q.scheme() == "":
             q.setScheme("http")
-        self.browser.setUrl(q)
+        self.webview.setUrl(q)
 
     def update_url_bar(self, q):
         self.url_bar.setText(q.toString())
