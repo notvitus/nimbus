@@ -49,6 +49,9 @@ class MainWindow(QMainWindow):
         stop_btn = QAction("Stop", self)
         stop_btn.setStatusTip("Stop loading current page")
         stop_btn.triggered.connect(self.browser.stop)
+        stop_btn.triggered.connect(lambda: stop_btn.setDisabled(True))
+        self.browser.loadStarted.connect(lambda: stop_btn.setDisabled(False))
+        self.browser.loadFinished.connect(lambda: stop_btn.setDisabled(True))
         navtb.addAction(stop_btn)
 
         self.show()
