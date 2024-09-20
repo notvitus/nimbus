@@ -1,6 +1,7 @@
-from PyQt5.QtCore import *
-from PyQt5.QtWidgets import *
-from PyQt5.QtWebEngineWidgets import QWebEngineView
+from PyQt6.QtCore import *
+from PyQt6.QtGui import QAction
+from PyQt6.QtWidgets import *
+from PyQt6.QtWebEngineWidgets import QWebEngineView
 import sys
 
 
@@ -73,4 +74,4 @@ class MainWindow(QMainWindow):
 app = QApplication(sys.argv)
 app.setApplicationName("NIMBUS Browser")
 window = MainWindow()
-app.exec_()
+app.exec()
