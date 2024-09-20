@@ -1,4 +1,4 @@
-from PyQt6.QtCore import QUrl, QEvent, Qt, pyqtSignal
+from PyQt6.QtCore import QUrl
 from PyQt6.QtGui import QAction
 from PyQt6.QtWidgets import QMainWindow, QStatusBar, QToolBar, QLineEdit, QApplication
 from PyQt6.QtWebEngineWidgets import QWebEngineView
@@ -11,7 +11,9 @@ class MainWindow(QMainWindow):
         self.webview = QWebEngineView()
         self.webview.urlChanged.connect(self.update_url_bar)
         self.webview.loadFinished.connect(
-            lambda: self.setWindowTitle(self.webview.page().title() + " - NIMBUS Browser")
+            lambda: self.setWindowTitle(
+                self.webview.page().title() + " - NIMBUS Browser"
+            )
         )
         self.setCentralWidget(self.webview)
 
