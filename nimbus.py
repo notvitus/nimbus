@@ -77,4 +77,4 @@ class MainWindow(QMainWindow):
 app = QApplication(sys.argv)
 app.setApplicationName("NIMBUS Browser")
 window = MainWindow()
-app.exec()
+raise SystemExit(app.exec())
