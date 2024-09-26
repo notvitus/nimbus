@@ -1,0 +1,7 @@
+# Pycharm
+.idea/
+
+# Pyinstaller
+build/
+dist/
+*.spec
